@@ -5,6 +5,7 @@ const config: Config = {
     "./pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./components/**/*.{js,ts,jsx,tsx,mdx}",
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
+    "./ui/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   theme: {
     extend: {
@@ -16,5 +17,20 @@ const config: Config = {
     },
   },
   plugins: [],
+  // darkMode: "class",
+  // theme: {
+  //   extend: {
+  //     colors: {
+  //       light: {
+  //         background: "#ffffff",
+  //         text: "#000000",
+  //       },
+  //       dark: {
+  //         background: "#1a202c",
+  //         text: "#ffffff",
+  //       },
+  //     },
+  //   },
+  // },
 };
 export default config;
