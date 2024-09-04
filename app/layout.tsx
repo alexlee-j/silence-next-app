@@ -28,15 +28,15 @@ import "@/language";
 
 const RootLayout = ({ children }: React.PropsWithChildren) => (
   <html lang="en">
-    <body>
+    <body className="flex flex-col h-screen">
       <Provider store={store}>
         <HeaderBar />
       </Provider>
-      <div className="root flex bg-white">
-        <div className="w-[150px] h-screen bg-slate-800 text-white">
+      <div className="root flex-1 flex bg-white">
+        <div className="w-[150px] bg-slate-800 text-white">
           <Tab tabData={routers}></Tab>
         </div>
-        <div className="flex flex-col flex-1">
+        <div className="flex flex-col flex-1 px-5">
           <div className="flex-1 p-5 mt-[20px] border rounded border-slate-300">
             <AntdRegistry>{children}</AntdRegistry>
           </div>
