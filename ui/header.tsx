@@ -52,28 +52,28 @@ const ThemeComponent = () => {
   };
 
   useEffect(() => {
-    // if (darkModeState === "weak") {
-    //   document.getElementById("root")!.style.filter = "invert(100%)";
-    //   removeStyle("styles/theme-default.css");
-    //   removeStyle("styles/theme-dark.css");
-    // } else if (darkModeState === "gray") {
-    //   document.getElementById("root")!.style.filter = "grayscale(100%)";
-    //   removeStyle("styles/theme-default.css");
-    //   removeStyle("styles/theme-dark.css");
-    // } else if (darkModeState === "dark") {
-    //   document.getElementById("root")!.style.filter = "none";
-    //   removeStyle("styles/theme-default.css");
-    //   loadStyle("/styles/theme-dark.css");
-    // } else {
-    //   document.getElementById("root")!.style.filter = "none";
-    //   removeStyle("styles/theme-dark.css");
-    //   loadStyle("/styles/theme-default.css");
-    // }
+    if (darkModeState === "weak") {
+      document.getElementById("root")!.style.filter = "invert(100%)";
+      removeStyle("styles/theme-default.css");
+      removeStyle("styles/theme-dark.css");
+    } else if (darkModeState === "gray") {
+      document.getElementById("root")!.style.filter = "grayscale(100%)";
+      removeStyle("styles/theme-default.css");
+      removeStyle("styles/theme-dark.css");
+    } else if (darkModeState === "dark") {
+      document.getElementById("root")!.style.filter = "none";
+      removeStyle("styles/theme-default.css");
+      loadStyle("/styles/theme-dark.css");
+    } else {
+      document.getElementById("root")!.style.filter = "none";
+      removeStyle("styles/theme-dark.css");
+      loadStyle("/styles/theme-default.css");
+    }
   }, [darkModeState]);
   const { t } = useTranslation();
 
   return (
-    <span className="ml10">
+    <span className="ml-2">
       <IconFont name="theme" onClick={showDrawer} />
       <Drawer title={t("Theme.Setting")} onClose={onClose} open={open}>
         <p className="theme-item">
@@ -141,16 +141,16 @@ const LanguageComponent: React.FC = () => {
 const HeaderBar: React.FC = () => {
   const { t } = useTranslation();
   return (
-    <Flex justify="space-between" align="center" className="bg-slate-800 px-5">
-      <div className="justify-start text-white text-3xl">
+    <header className="h-16 bg-slate-800 px-5 flex justify-between items-center">
+      <div className="flex justify-start items-center text-white text-3xl">
         <CloudOutlined />
-        {t("Common.WebsitTitle")}
+        <p className="text-[14px] pl-2">{t("Common.WebsitTitle")}</p>
       </div>
-      <div>
+      <div className="flex">
         <LanguageComponent />
         <ThemeComponent />
       </div>
-    </Flex>
+    </header>
   );
 };
 

@@ -32,7 +32,7 @@ const RootLayout = ({ children }: React.PropsWithChildren) => (
       <Provider store={store}>
         <HeaderBar />
       </Provider>
-      <div className="root flex-1 flex bg-white">
+      <div id="root" className="flex-1 flex bg-white">
         <div className="w-[150px] bg-slate-800 text-white">
           <Tab tabData={routers}></Tab>
         </div>
