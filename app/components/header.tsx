@@ -1,13 +1,12 @@
 "use client";
 import React, { useEffect } from "react";
-import { Flex, Drawer, Switch } from "antd";
+import { Drawer, Switch } from "antd";
 import { CloudOutlined } from "@ant-design/icons";
 import IconFont from "@/ui/iconFont";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "@/redux/store";
 import { changeMode } from "@/redux/modules/themeSlice";
 import { changeLang } from "@/redux/modules/langchange";
-import { useTranslation } from "react-i18next";
 
 const loadStyle = (href: string) => {
   const head = document.getElementsByTagName("head")[0];
@@ -70,40 +69,39 @@ const ThemeComponent = () => {
       loadStyle("/styles/theme-default.css");
     }
   }, [darkModeState]);
-  const { t } = useTranslation();
 
   return (
     <span className="ml-2">
       <IconFont name="theme" onClick={showDrawer} />
-      <Drawer title={t("Theme.Setting")} onClose={onClose} open={open}>
+      <Drawer title="设定" onClose={onClose} open={open}>
         <p className="theme-item">
-          {t("Theme.Dark")}
+          暗黑模式
           <Switch
             checked={darkModeState === "dark"}
-            checkedChildren={t("Common.Open")}
-            unCheckedChildren={t("Common.Close")}
+            checkedChildren="开启"
+            unCheckedChildren="关闭"
             onChange={(e) => {
               onchange(e, "dark");
             }}
           ></Switch>
         </p>
         <p className="theme-item">
-          {t("Theme.Weak")}
+          色弱模式
           <Switch
             checked={darkModeState === "weak"}
-            checkedChildren={t("Common.Open")}
-            unCheckedChildren={t("Common.Close")}
+            checkedChildren="开启"
+            unCheckedChildren="关闭"
             onChange={(e) => {
               onchange(e, "weak");
             }}
           ></Switch>
         </p>
         <p className="theme-item">
-          {t("Theme.Gray")}
+          灰色模式
           <Switch
             checked={darkModeState === "gray"}
-            checkedChildren={t("Common.Open")}
-            unCheckedChildren={t("Common.Close")}
+            checkedChildren="开启"
+            unCheckedChildren="关闭"
             onChange={(e) => {
               onchange(e, "gray");
             }}
@@ -115,23 +113,18 @@ const ThemeComponent = () => {
 };
 
 const LanguageComponent: React.FC = () => {
-  const { t, i18n } = useTranslation();
   const lang = useSelector((state: RootState) => state.lang.lang);
-
   const dispatchLang = useDispatch();
-  useEffect(() => {
-    i18n.changeLanguage(lang);
-    console.log(lang, "改变后");
-  }, [lang]);
+
   const handleChange = () => {
-    if (lang == "en") {
+    if (lang === "en") {
       dispatchLang(changeLang({ lang: "zh" }));
-    } else if (lang == "zh") {
+    } else if (lang === "zh") {
       dispatchLang(changeLang({ lang: "en" }));
     }
   };
 
-  if (i18n.language == "en") {
+  if (lang === "en") {
     return <IconFont name="zhongyingwen1" onClick={handleChange} />;
   } else {
     return <IconFont name="zhongyingwen-2" onClick={handleChange} />;
@@ -139,12 +132,11 @@ const LanguageComponent: React.FC = () => {
 };
 
 const HeaderBar: React.FC = () => {
-  const { t } = useTranslation();
   return (
     <header className="h-16 bg-slate-800 px-5 flex justify-between items-center">
       <div className="flex justify-start items-center text-white text-3xl">
         <CloudOutlined />
-        <p className="text-[14px] pl-2">{t("Common.WebsitTitle")}</p>
+        <p className="text-[14px] pl-2">默默学开发</p>
       </div>
       <div className="flex">
         <LanguageComponent />
