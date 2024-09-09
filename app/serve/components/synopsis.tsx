@@ -1,63 +1,56 @@
-// app/synopsis/page.tsx
 "use client";
 
 import React, {
   useEffect,
   useState,
-  useMemo,
   useRef,
   useCallback,
+  useMemo,
 } from "react";
 import { Col, Row, Flex, Popover } from "antd";
 import { QuestionCircleOutlined } from "@ant-design/icons";
 import echarts from "@/components/commonEcharts";
 import debounce from "lodash/debounce";
+import { InformationData, monitorChartType } from "@/types/synopsis";
 
-type InformationData = {
-  key: string;
-  label: string;
-  value?: string;
-  needIcon?: boolean;
-  popOverContent?: string;
-};
-
-const EchartsModel: React.FC<{ height: number }> = ({ height }) => {
+const EchartsModel: React.FC<{ height: number; data: monitorChartType }> = ({
+  height,
+  data,
+}) => {
   const chartRef = useRef<HTMLDivElement>(null);
   const chartInstance = useRef<echarts.ECharts | null>(null);
 
   const initChart = useCallback(() => {
+    const initOptions: echarts.EChartsCoreOption = {
+      grid: {
+        left: "10%",
+        right: "10%",
+        top: "10%",
+        bottom: "10%",
+      },
+      xAxis: {
+        type: "category",
+        data: data.xAxisArr,
+      },
+      yAxis: {
+        type: "value",
+        min: 500,
+        max: 1000,
+      },
+      series: [
+        {
+          data: data.seriesArr,
+          type: "line",
+          smooth: true,
+        },
+      ],
+    };
     if (chartRef.current) {
       const myChart = echarts.init(chartRef.current);
-
-      const options: echarts.EChartsCoreOption = {
-        grid: {
-          left: "10%",
-          right: "10%",
-          top: "10%",
-          bottom: "10%",
-        },
-        xAxis: {
-          type: "category",
-          data: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
-        },
-        yAxis: {
-          type: "value",
-          min: 500,
-          max: 1000,
-        },
-        series: [
-          {
-            data: [820, 932, 901, 934, 701, 903, 609],
-            type: "line",
-            smooth: true,
-          },
-        ],
-      };
-
-      myChart.setOption(options);
+      myChart.setOption(initOptions);
       chartInstance.current = myChart;
     }
-  }, []);
+  }, [data]);
 
   useEffect(() => {
     initChart();
@@ -138,13 +131,19 @@ const Information: React.FC<{
 
 const Synopsis: React.FC = () => {
   const [infomationData, setInfomationData] = useState<InformationData[]>([]);
+  const [monitorData, setMonitorData] = useState<monitorChartType | null>(null);
   const [infoHeight, setInfoHeight] = useState<number>(0);
 
   useEffect(() => {
     const fetchData = async () => {
-      const response = await fetch("/api/infomationData");
-      const data: InformationData[] = await response.json();
-      setInfomationData(data);
+      const [infoResponse, monitorResponse] = await Promise.all([
+        fetch("/api/infomationData"),
+        fetch("/api/monitorData"),
+      ]);
+      const infoData: InformationData[] = await infoResponse.json();
+      const monitorData: monitorChartType = await monitorResponse.json();
+      setInfomationData(infoData);
+      setMonitorData(monitorData);
     };
 
     fetchData();
@@ -157,7 +156,7 @@ const Synopsis: React.FC = () => {
       </div>
       <div className="shadow-md m-2 box-border rounded-none text-xs p-5 h-auto w-[37vw] max-w-[475px] content-bg">
         <div className="title">实例监控</div>
-        <EchartsModel height={infoHeight} />
+        {monitorData && <EchartsModel height={infoHeight} data={monitorData} />}
       </div>
     </div>
   );

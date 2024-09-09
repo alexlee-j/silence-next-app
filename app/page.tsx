@@ -1,12 +1,10 @@
 import React from "react";
-import Link from "next/link";
 import { Fragment } from "react";
 
 const RootLayout = () => (
-  <Fragment>
-    这是我的首页啦
-    <Link href="/domain">域名页面</Link>
-  </Fragment>
+  <h1 className="w-full h-full flex justify-center items-center text-2xl">
+    Welcome to Learning front-end in silence!
+  </h1>
 );
 
 export default RootLayout;

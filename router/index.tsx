@@ -9,18 +9,18 @@ type router = {
 const routers: router[] = [
   {
     key: "1",
-    title: `Tab 1`,
-    slug: "/domain",
+    title: `首页`,
+    slug: `/`,
   },
   {
     key: "2",
-    title: `Tab 2`,
-    slug: `serve`,
+    title: `域名`,
+    slug: "/domain",
   },
   {
     key: "3",
-    title: `Tab 3`,
-    slug: `/`,
+    title: `服务`,
+    slug: `serve`,
   },
 ];
 
