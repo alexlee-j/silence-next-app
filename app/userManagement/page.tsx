@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, Fragment, useState } from "react";
-import { Button, Form, Input, Select } from "antd";
+import { Button, Form, Input, Select, message } from "antd";
 import type { FormProps } from "antd";
 import UserInfoTable from "./components/table";
 
@@ -33,6 +33,24 @@ const queryUsersInfo = async (params: FieldType & PaginationType) => {
 const onFinishFailed: FormProps<FieldType>["onFinishFailed"] = (errorInfo) => {
   console.log("Failed:", errorInfo);
 };
+const handleInsert = async () => {
+  const res = await fetch("/api/insertUsersInfo", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      // name: "silencelee1",
+      // email: "silencelee1@163.com",
+    }),
+  });
+  if (res.ok) {
+    message.success("添加成功");
+  } else {
+    message.error(res.statusText);
+  }
+  console.log(res);
+};
 
 const App: React.FC = () => {
   const [userInfo, setUserInfo] = useState([]);
@@ -40,9 +58,11 @@ const App: React.FC = () => {
     current: 1,
     pageSize: 10, // 每页显示一条数据
   });
+  const [loading, setLoading] = useState(false);
 
   const onFinish: FormProps<FieldType>["onFinish"] = async (values) => {
     console.log("Success:", values);
+    setLoading(true);
     const resp = await queryUsersInfo({
       ...values,
       ...tableParams,
@@ -53,6 +73,7 @@ const App: React.FC = () => {
       ...tableParams,
       total: resp.total,
     });
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -106,11 +127,17 @@ const App: React.FC = () => {
           </Button>
         </Form.Item>
       </Form>
+      <p className="mt-8">
+        <Button type="default" onClick={handleInsert}>
+          新建
+        </Button>
+      </p>
       <UserInfoTable
         className="mt-10"
         dataSource={userInfo}
         pagination={tableParams}
         onChange={handleTableChange}
+        loading={loading}
       />
     </Fragment>
   );

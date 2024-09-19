@@ -8,8 +8,8 @@ export async function POST(req: NextRequest) {
 
     // 构建动态查询
     let sql =
-      "SELECT *, to_char(created_at, 'YYYY-MM-DD HH24:MI:SS') as formatted_date FROM users WHERE 1=1";
-    let countSql = "SELECT COUNT(*) FROM users WHERE 1=1";
+      "SELECT *, to_char(created_at, 'YYYY-MM-DD HH24:MI:SS') as formatted_date FROM users WHERE 1=1 AND is_deleted = '0'";
+    let countSql = "SELECT COUNT(*) FROM users WHERE 1=1 AND is_deleted = '0'";
     const queryParams: any[] = [];
     const countParams: any[] = [];
 

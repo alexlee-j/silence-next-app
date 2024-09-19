@@ -20,6 +20,7 @@ const UserInfoTable: React.FC<UserInfoTableProps> = ({
   className,
   pagination,
   onChange,
+  loading,
 }) => {
   return (
     <Table
@@ -28,6 +29,7 @@ const UserInfoTable: React.FC<UserInfoTableProps> = ({
       rowKey="id"
       pagination={pagination}
       onChange={onChange}
+      loading={loading}
     >
       <Column title="名字" dataIndex="name" key="name" />
       <Column title="邮箱" dataIndex="email" key="email" />
