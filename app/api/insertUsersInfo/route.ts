@@ -14,7 +14,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const result = await query<User>(
+    const result = await query(
       "INSERT INTO users(name, email) VALUES($1, $2) RETURNING *",
       [name, email]
     );
