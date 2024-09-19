@@ -4,13 +4,7 @@ import { User } from "@/types/user";
 
 export async function POST(req: NextRequest) {
   try {
-    const {
-      name,
-      email,
-      sort,
-      pageSize = 10,
-      currentPage = 1,
-    } = await req.json();
+    const { name, email, sort, pageSize = 10, current = 1 } = await req.json();
 
     // 构建动态查询
     let sql =
@@ -20,18 +14,19 @@ export async function POST(req: NextRequest) {
     const countParams: any[] = [];
 
     if (name) {
-      sql += " AND name = $1";
-      countSql += " AND name = $1";
-      queryParams.push(name);
-      countParams.push(name);
+      const nameParamIndex = queryParams.length + 1;
+      sql += ` AND name ILIKE $${nameParamIndex}`;
+      countSql += ` AND name LIKE $${nameParamIndex}`;
+      queryParams.push(`%${name}%`);
+      countParams.push(`%${name}%`);
     }
 
     if (email) {
       const emailParamIndex = queryParams.length + 1;
-      sql += ` AND email = $${emailParamIndex}`;
-      countSql += ` AND email = $${emailParamIndex}`;
-      queryParams.push(email);
-      countParams.push(email);
+      sql += ` AND email ILIKE $${emailParamIndex}`;
+      countSql += ` AND email LIKE $${emailParamIndex}`;
+      queryParams.push(`%${email}%`);
+      countParams.push(`%${email}%`);
     }
 
     if (sort) {
@@ -58,7 +53,7 @@ export async function POST(req: NextRequest) {
     }
 
     // 添加分页
-    const offset = (currentPage - 1) * pageSize;
+    const offset = (current - 1) * pageSize;
     sql += ` LIMIT $${queryParams.length + 1} OFFSET $${
       queryParams.length + 2
     }`;

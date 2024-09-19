@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, Fragment, useState } from "react";
-import type { FormProps } from "antd";
 import { Button, Form, Input, Select } from "antd";
+import type { FormProps } from "antd";
 import UserInfoTable from "./components/table";
 
 const { Option } = Select;
@@ -12,14 +12,13 @@ type FieldType = {
   sort: string;
 };
 
-type paginationtype = {
-  pagination: {
-    current: number;
-    pageSize: number;
-  };
+type PaginationType = {
+  current: number;
+  pageSize: number;
+  total?: number;
 };
 
-const queryUsersInfo = async (params: FieldType) => {
+const queryUsersInfo = async (params: FieldType & PaginationType) => {
   const res = await fetch("/api/queryUsersInfo", {
     method: "POST",
     headers: {
@@ -37,28 +36,36 @@ const onFinishFailed: FormProps<FieldType>["onFinishFailed"] = (errorInfo) => {
 
 const App: React.FC = () => {
   const [userInfo, setUserInfo] = useState([]);
-  const [total, setTotal] = useState(0);
-  const [tableParams, setTableParams] = useState<paginationtype>({
-    pagination: {
-      current: 1,
-      pageSize: 1,
-    },
+  const [tableParams, setTableParams] = useState<PaginationType>({
+    current: 1,
+    pageSize: 10, // 每页显示一条数据
   });
 
   const onFinish: FormProps<FieldType>["onFinish"] = async (values) => {
     console.log("Success:", values);
-    const userInfo = await queryUsersInfo({
+    const resp = await queryUsersInfo({
       ...values,
-      ...tableParams.pagination,
+      ...tableParams,
     });
-    console.log(userInfo, "userInfo");
-    setUserInfo(userInfo.userList);
-    setTotal(userInfo.total);
+    console.log(resp, "resp");
+    setUserInfo(resp.userList);
+    setTableParams({
+      ...tableParams,
+      total: resp.total,
+    });
   };
 
   useEffect(() => {
     onFinish({ name: "", email: "", sort: "1" });
-  }, []);
+  }, [tableParams.current, tableParams.pageSize]);
+
+  const handleTableChange = (pagination: any) => {
+    setTableParams({
+      ...tableParams,
+      current: pagination.current,
+      pageSize: pagination.pageSize,
+    });
+  };
 
   return (
     <Fragment>
@@ -102,7 +109,8 @@ const App: React.FC = () => {
       <UserInfoTable
         className="mt-10"
         dataSource={userInfo}
-        pagination={tableParams.pagination}
+        pagination={tableParams}
+        onChange={handleTableChange}
       />
     </Fragment>
   );

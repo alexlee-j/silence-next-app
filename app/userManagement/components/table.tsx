@@ -1,5 +1,5 @@
 import React from "react";
-import { Space, Table } from "antd";
+import { Table } from "antd";
 import type { TableProps } from "antd";
 
 const { Column } = Table;
@@ -10,15 +10,25 @@ interface UserInfoType {
   email: string;
   formatted_date: string;
 }
+
 interface UserInfoTableProps extends TableProps<UserInfoType> {
   className?: string;
 }
+
 const UserInfoTable: React.FC<UserInfoTableProps> = ({
   dataSource,
   className,
+  pagination,
+  onChange,
 }) => {
   return (
-    <Table dataSource={dataSource} className={className} rowKey="id">
+    <Table
+      dataSource={dataSource}
+      className={className}
+      rowKey="id"
+      pagination={pagination}
+      onChange={onChange}
+    >
       <Column title="名字" dataIndex="name" key="name" />
       <Column title="邮箱" dataIndex="email" key="email" />
       <Column
