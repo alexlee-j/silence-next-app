@@ -22,6 +22,11 @@ const routers: router[] = [
     title: `服务`,
     slug: `serve`,
   },
+  {
+    key: "4",
+    title: `用户管理`,
+    slug: `userManagement`,
+  },
 ];
 
 export default routers;

@@ -7,7 +7,7 @@ import { useEffect } from "react";
 
 const Domain = () => {
   const fetchUser = async (params: any) => {
-    const response = await fetch("/api/users", {
+    const response = await fetch("/api/queryUsersInfo", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
