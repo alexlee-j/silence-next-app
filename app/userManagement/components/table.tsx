@@ -1,5 +1,5 @@
 import React from "react";
-import { Table } from "antd";
+import { Table, Space, Button, Popconfirm } from "antd";
 import type { TableProps } from "antd";
 
 const { Column } = Table;
@@ -13,6 +13,10 @@ interface UserInfoType {
 
 interface UserInfoTableProps extends TableProps<UserInfoType> {
   className?: string;
+  onModify?: (record: UserInfoTableProps) => void;
+  onDelete?: (record: UserInfoTableProps) => void;
+  loading?: boolean;
+  onChange?: (pagination: any) => void;
 }
 
 const UserInfoTable: React.FC<UserInfoTableProps> = ({
@@ -21,6 +25,8 @@ const UserInfoTable: React.FC<UserInfoTableProps> = ({
   pagination,
   onChange,
   loading,
+  onModify,
+  onDelete,
 }) => {
   return (
     <Table
@@ -37,6 +43,26 @@ const UserInfoTable: React.FC<UserInfoTableProps> = ({
         title="注册日期"
         dataIndex="formatted_date"
         key="formatted_date"
+      />
+      <Column
+        title="Action"
+        key="action"
+        render={(_: any, record) => (
+          <Space size="middle">
+            <a href="#" onClick={() => onModify && onModify(record)}>
+              修改
+            </a>
+            <Popconfirm
+              placement="topRight"
+              title="确定删除该用户吗？"
+              onConfirm={() => onDelete && onDelete(record)}
+              okText="确定"
+              cancelText="取消"
+            >
+              <a href="#">删除</a>
+            </Popconfirm>
+          </Space>
+        )}
       />
     </Table>
   );
