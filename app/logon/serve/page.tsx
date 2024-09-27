@@ -1,7 +1,7 @@
 import React from "react";
 import { Tabs } from "antd";
 import type { TabsProps } from "antd";
-import Synopsis from "@/app/serve/components/synopsis";
+import Synopsis from "@/app/logon/serve/components/synopsis";
 
 export const metadata = {
   title: "服务页",
