@@ -1,76 +1,79 @@
 import { NextRequest, NextResponse } from "next/server";
-import { query } from "@/lib/db";
+import { prisma } from "@/lib/db";
 import { User } from "@/types/user";
+import { Prisma } from "@prisma/client";
 
 export async function POST(req: NextRequest) {
   try {
-    const { name, email, sort, pageSize = 10, current = 1 } = await req.json();
+    const {
+      username,
+      email,
+      sort,
+      pageSize = 10,
+      current = 1,
+    } = await req.json();
 
-    // 构建动态查询
-    let sql =
-      "SELECT *, to_char(created_at, 'YYYY-MM-DD HH24:MI:SS') as formatted_date FROM users WHERE 1=1 AND is_deleted = '0'";
-    let countSql = "SELECT COUNT(*) FROM users WHERE 1=1 AND is_deleted = '0'";
-    const queryParams: any[] = [];
-    const countParams: any[] = [];
+    // 构建查询条件
+    const where: Prisma.users_infoWhereInput = {};
 
-    if (name) {
-      const nameParamIndex = queryParams.length + 1;
-      sql += ` AND name ILIKE $${nameParamIndex}`;
-      countSql += ` AND name LIKE $${nameParamIndex}`;
-      queryParams.push(`%${name}%`);
-      countParams.push(`%${name}%`);
+    if (username) {
+      where.username = { contains: username, mode: "insensitive" };
     }
 
     if (email) {
-      const emailParamIndex = queryParams.length + 1;
-      sql += ` AND email ILIKE $${emailParamIndex}`;
-      countSql += ` AND email LIKE $${emailParamIndex}`;
-      queryParams.push(`%${email}%`);
-      countParams.push(`%${email}%`);
+      where.email = { contains: email, mode: "insensitive" };
     }
 
+    // 构建排序条件
+    let orderBy: Prisma.users_infoOrderByWithRelationInput = {};
     if (sort) {
       switch (sort) {
         case "1":
-          sql += " ORDER BY name ASC";
+          orderBy.username = "asc";
           break;
         case "2":
-          sql += " ORDER BY name DESC";
+          orderBy.username = "desc";
           break;
         case "3":
-          sql += " ORDER BY email ASC";
+          orderBy.email = "asc";
           break;
         case "4":
-          sql += " ORDER BY email DESC";
+          orderBy.email = "desc";
           break;
         case "5":
-          sql += " ORDER BY created_at ASC";
+          orderBy.created_at = "asc";
           break;
         case "6":
-          sql += " ORDER BY created_at DESC";
+          orderBy.created_at = "desc";
           break;
       }
     }
 
-    // 添加分页
-    const offset = (current - 1) * pageSize;
-    sql += ` LIMIT $${queryParams.length + 1} OFFSET $${
-      queryParams.length + 2
-    }`;
-    queryParams.push(pageSize, offset);
-
     // 查询总记录数
-    const countResult = await query(countSql, countParams);
-    const total = parseInt(countResult.rows[0].count, 10);
+    const total = await prisma.users_info.count({ where });
 
-    const result = await query(sql, queryParams);
+    // 查询用户列表
+    const users = await prisma.users_info.findMany({
+      where,
+      orderBy,
+      take: pageSize,
+      skip: (current - 1) * pageSize,
+      select: {
+        user_id: true,
+        username: true,
+        email: true,
+        created_at: true,
+      },
+    });
 
-    if (result.rows.length === 0) {
-      return NextResponse.json({ userList: [], total }, { status: 200 });
-    }
-
-    const userList: User[] = result.rows as unknown as User[];
-    console.log(userList, "9999");
+    // 格式化日期并将 username 转换为 name
+    const userList: User[] = users.map((user) => ({
+      ...user,
+      name: user.username,
+      created_at: user.created_at
+        ? user.created_at.toISOString().replace("T", " ").slice(0, 19)
+        : "",
+    }));
 
     return NextResponse.json({ userList, total }, { status: 200 });
   } catch (error) {

@@ -8,7 +8,7 @@ interface UserInfoType {
   id: number;
   name: string;
   email: string;
-  formatted_date: string;
+  created_at: string;
 }
 
 interface UserInfoTableProps extends TableProps<UserInfoType> {
@@ -39,11 +39,7 @@ const UserInfoTable: React.FC<UserInfoTableProps> = ({
     >
       <Column title="名字" dataIndex="name" key="name" />
       <Column title="邮箱" dataIndex="email" key="email" />
-      <Column
-        title="注册日期"
-        dataIndex="formatted_date"
-        key="formatted_date"
-      />
+      <Column title="注册日期" dataIndex="created_at" key="created_at" />
       <Column
         title="Action"
         key="action"

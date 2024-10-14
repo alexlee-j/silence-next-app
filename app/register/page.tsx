@@ -3,6 +3,7 @@ import dynamic from "next/dynamic";
 const RegisterForm = dynamic(() => import("./components/registerForm"), {
   ssr: false,
 });
+import Footer from "@/app/components/Footer";
 
 export const metadata = {
   title: "注册页",
@@ -22,6 +23,7 @@ const Register: React.FC = () => {
 
       {/* 表单内容 */}
       <RegisterForm></RegisterForm>
+      <Footer className="fixed inset-x-0 bottom-0 w-screen bg-white/80" />
     </div>
   );
 };

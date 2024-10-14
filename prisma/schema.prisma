@@ -1,0 +1,26 @@
+   generator client {
+     provider = "prisma-client-js"
+   }
+
+   datasource db {
+     provider = "postgresql"
+     url      = env("DATABASE_URL")
+   }
+
+  model users_info {
+    user_id  String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+    username String    @unique @db.VarChar(50)
+    email    String?   @db.VarChar(100)  // 确保 email 是可选的
+    users_pwd users_pwd?
+    created_at DateTime? @default(now())
+    update_at  DateTime? @updatedAt
+    is_deleted String?
+  }
+
+  model users_pwd {
+    user_id  String @id @db.Uuid
+    salt     String
+    hash_pwd String
+    user     users_info @relation(fields: [user_id], references: [user_id])
+  }
+  

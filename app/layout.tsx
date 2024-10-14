@@ -1,7 +1,6 @@
 import React from "react";
 import { Metadata } from "next";
 import "@/app/globals.css";
-import Footer from "@/app/components/Footer";
 
 export const metadata: Metadata = {
   title: {
@@ -22,8 +21,7 @@ const App = ({ children }: React.PropsWithChildren) => {
   return (
     <html lang="en">
       <body className="flex flex-col min-h-screen">
-        <main className="flex-grow">{children}</main>
-        <Footer className="fixed inset-x-0 bottom-0 w-screen bg-white/80" />
+        <main>{children}</main>
       </body>
     </html>
   );

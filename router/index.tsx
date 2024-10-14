@@ -15,7 +15,7 @@ const routers: router[] = [
   {
     key: "2",
     title: `域名`,
-    slug: "/domain",
+    slug: "domain",
   },
   {
     key: "3",
