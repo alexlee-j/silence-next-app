@@ -29,17 +29,19 @@ export const metadata: Metadata = {
 
 const RootLayout = ({ children }: React.PropsWithChildren) => (
   <ClientProvider>
-    <HeaderBar />
+    <div className="flex flex-col min-h-screen">
+      <HeaderBar />
 
-    <div id="root" className="flex-1 flex bg-white">
-      <div className="w-[150px] bg-slate-800 text-white">
-        <Tab tabData={routers}></Tab>
-      </div>
-      <div className="flex flex-col flex-1 px-5">
-        <div className="flex-1 p-5 mt-[20px] border rounded border-slate-300">
-          <AntdRegistry>{children}</AntdRegistry>
+      <div id="root" className="flex flex-1 bg-white">
+        <div className="w-[150px] bg-slate-800 text-white">
+          <Tab tabData={routers}></Tab>
         </div>
-        <Footer></Footer>
+        <div className="flex flex-col flex-1 px-5">
+          <div className="flex-1 p-5 mt-[20px] border rounded border-slate-300 overflow-auto">
+            <AntdRegistry>{children}</AntdRegistry>
+          </div>
+          <Footer></Footer>
+        </div>
       </div>
     </div>
   </ClientProvider>
