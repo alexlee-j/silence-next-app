@@ -4,7 +4,8 @@
 
    datasource db {
      provider = "postgresql"
-     url      = env("DATABASE_URL")
+     url      = env("POSTGRES_PRISMA_URL") // 使用连接池
+     directUrl = env("POSTGRES_URL_NON_POOLING") // 使用直接连接
    }
 
   model users_info {
