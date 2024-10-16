@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { query } from "@/lib/db";
+import { prisma } from "@/lib/db";
 
 export async function POST(req: NextRequest) {
   const { id } = await req.json();
@@ -9,12 +9,16 @@ export async function POST(req: NextRequest) {
     });
   }
   try {
-    const sql = `UPDATE users SET is_deleted = 1 WHERE id = ${id}`;
-    let result = await query(sql);
-    console.log(result, "0000000000");
-
+    const result = await prisma.users_info.update({
+      where: {
+        user_id: id,
+      },
+      data: {
+        is_deleted: "1",
+      },
+    });
     return NextResponse.json({
-      body: result.rows[0],
+      body: result,
     });
   } catch (error) {
     return NextResponse.json({

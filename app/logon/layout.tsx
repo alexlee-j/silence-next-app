@@ -28,25 +28,21 @@ export const metadata: Metadata = {
 };
 
 const RootLayout = ({ children }: React.PropsWithChildren) => (
-  <html lang="en">
-    <body className="flex flex-col h-screen">
-      <ClientProvider>
-        <HeaderBar />
+  <ClientProvider>
+    <HeaderBar />
 
-        <div id="root" className="flex-1 flex bg-white">
-          <div className="w-[150px] bg-slate-800 text-white">
-            <Tab tabData={routers}></Tab>
-          </div>
-          <div className="flex flex-col flex-1 px-5">
-            <div className="flex-1 p-5 mt-[20px] border rounded border-slate-300">
-              <AntdRegistry>{children}</AntdRegistry>
-            </div>
-            <Footer></Footer>
-          </div>
+    <div id="root" className="flex-1 flex bg-white">
+      <div className="w-[150px] bg-slate-800 text-white">
+        <Tab tabData={routers}></Tab>
+      </div>
+      <div className="flex flex-col flex-1 px-5">
+        <div className="flex-1 p-5 mt-[20px] border rounded border-slate-300">
+          <AntdRegistry>{children}</AntdRegistry>
         </div>
-      </ClientProvider>
-    </body>
-  </html>
+        <Footer></Footer>
+      </div>
+    </div>
+  </ClientProvider>
 );
 
 export default RootLayout;

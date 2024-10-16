@@ -4,7 +4,7 @@ import { Modal, Form, Input, Button, message } from "antd";
 type ModalType = {
   name?: string;
   email?: string;
-  id?: number;
+  user_id?: string;
 };
 const UserIndfoModal = ({
   visible,
@@ -37,7 +37,7 @@ const UserIndfoModal = ({
           ...values,
         };
         if (Object.keys(userInfo).length > 0) {
-          data.id = userInfo.id;
+          data.user_id = userInfo.user_id;
         }
         onSubmit(data); // 将表单数据传递给父组件或执行提交操作
       })

@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { query } from "@/lib/db";
-import { User } from "@/types/user";
+import { prisma } from "@/lib/db";
 
 export async function POST(req: NextRequest) {
   try {
@@ -14,15 +13,14 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const result = await query(
-      "INSERT INTO users(name, email) VALUES($1, $2) RETURNING *",
-      [name, email]
-    );
+    const result = await prisma.users_info.create({
+      data: {
+        username: name,
+        email,
+      },
+    });
 
-    return NextResponse.json(
-      { body: { rows: result.rows[0] } },
-      { status: 200 }
-    );
+    return NextResponse.json({ body: result }, { status: 200 });
   } catch (error) {
     console.error(error);
     return NextResponse.json(

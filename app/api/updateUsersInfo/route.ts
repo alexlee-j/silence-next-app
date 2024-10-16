@@ -1,23 +1,45 @@
 import { NextRequest, NextResponse } from "next/server";
-import { query } from "@/lib/db";
+import { prisma } from "@/lib/db";
+
 export async function POST(req: NextRequest) {
-  const { id, name, email } = await req.json();
   try {
-    let sql = `UPDATE USERS SET name = $1, email = $2 WHERE id = $3 RETURNING *`;
-    if (!name && !email) {
-      return NextResponse.json({
-        message: "Please provide at least one field to update",
-      });
+    const { id, username, email } = await req.json();
+
+    if (!id) {
+      return NextResponse.json({ message: "用户ID是必需的" }, { status: 400 });
     }
-    const result = await query(sql, [name, email, id]);
-    return NextResponse.json({
-      body: result.rows[0],
+
+    const updatedUser = await prisma.users_info.update({
+      where: { user_id: id },
+      data: {
+        username: username,
+        email: email,
+      },
     });
-  } catch (error) {
-    console.error(error);
+
+    if (!updatedUser) {
+      return NextResponse.json({ message: "用户不存在" }, { status: 404 });
+    }
+
     return NextResponse.json(
-      { message: "Internal Server Error" },
+      { message: "用户信息更新成功", user: updatedUser },
+      { status: 200 }
+    );
+  } catch (error: unknown) {
+    console.error("更新用户信息时发生错误:", error);
+    if (error instanceof Error && "code" in error && error.code === "P2002") {
+      return NextResponse.json(
+        { message: "用户名或邮箱已存在" },
+        { status: 409 }
+      );
+    }
+    return NextResponse.json(
+      { message: "更新失败，请稍后重试" },
       { status: 500 }
     );
   }
+}
+
+export async function GET() {
+  return NextResponse.json({ message: "Method Not Allowed" }, { status: 405 });
 }

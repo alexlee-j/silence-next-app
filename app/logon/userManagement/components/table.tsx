@@ -32,7 +32,7 @@ const UserInfoTable: React.FC<UserInfoTableProps> = ({
     <Table
       dataSource={dataSource}
       className={className}
-      rowKey="id"
+      rowKey="user_id"
       pagination={pagination}
       onChange={onChange}
       loading={loading}

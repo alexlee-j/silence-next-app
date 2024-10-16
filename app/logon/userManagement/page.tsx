@@ -24,7 +24,7 @@ type PaginationType = {
 type ModalType = {
   name?: string;
   email?: string;
-  id?: number;
+  user_id?: string;
 };
 
 const onFinishFailed: FormProps<FieldType>["onFinishFailed"] = (errorInfo) => {
@@ -39,7 +39,7 @@ const updateUserInfo = async (data: ModalType) => {
     body: JSON.stringify({
       name: data.name,
       email: data.email,
-      id: data.id,
+      id: data.user_id,
     }),
   });
   if (!res.ok) {
@@ -95,7 +95,6 @@ const App: React.FC = () => {
     debouncedFetchUserInfo(values, newPagination); // 调用 debouncedFetchUserInfo 进行数据查询
   };
   const handleSubmit = async (data: any) => {
-    console.log(data, "data111");
     if (Object.keys(userInfo).length == 0) {
       let res = await fetchData("/api/insertUsersInfo", {
         name: data.name,
