@@ -11,20 +11,31 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ message: "参数错误" }, { status: 400 });
   }
 
-  // 解密并比较密码
-  const decryptedPassword = CryptoJS.AES.decrypt(password, "123456").toString(
-    CryptoJS.enc.Utf8
-  );
-  const decryptedPassword1 = CryptoJS.AES.decrypt(password1, "123456").toString(
-    CryptoJS.enc.Utf8
-  );
-
-  if (decryptedPassword !== decryptedPassword1) {
-    return NextResponse.json({ message: "密码不一致" }, { status: 400 });
-  }
-
   try {
-    const result = await prisma.$transaction(async (tx: any) => {
+    // 解密密码
+    const decryptedPassword = CryptoJS.AES.decrypt(password, "123456").toString(
+      CryptoJS.enc.Utf8
+    );
+    const decryptedPassword1 = CryptoJS.AES.decrypt(
+      password1,
+      "123456"
+    ).toString(CryptoJS.enc.Utf8);
+
+    // 在后端验证密码
+    if (decryptedPassword !== decryptedPassword1) {
+      return NextResponse.json({ message: "密码不一致" }, { status: 400 });
+    }
+
+    if (decryptedPassword.length < 6) {
+      return NextResponse.json(
+        { message: "密码长度不能少于6个字符" },
+        { status: 400 }
+      );
+    }
+
+    // 这里可以添加更多的密码验证逻辑，比如检查是否为连续密码等
+
+    const result = await prisma.$transaction(async (tx) => {
       // 检查用户名是否存在
       const existingUser = await tx.users_info.findUnique({
         where: { username },
@@ -36,19 +47,22 @@ export async function POST(req: NextRequest) {
 
       // 插入用户信息
       const newUser = await tx.users_info.create({
-        data: { username },
-      });
-
-      // 生成盐和哈希密码
-      const salt = bcrypt.genSaltSync(10);
-      const hashPwd = bcrypt.hashSync(decryptedPassword, salt);
-
-      // 插入密码信息
-      await tx.users_pwd.create({
         data: {
-          user_id: newUser.user_id,
-          salt,
-          hash_pwd: hashPwd,
+          username,
+          users_pwd: {
+            create: {
+              salt: bcrypt.genSaltSync(10),
+              hash_pwd: bcrypt.hashSync(
+                decryptedPassword,
+                bcrypt.genSaltSync(10)
+              ),
+            },
+          },
+          user_role: {
+            create: {
+              role: "user", // 默认角色
+            },
+          },
         },
       });
 

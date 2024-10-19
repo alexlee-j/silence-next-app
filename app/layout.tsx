@@ -1,6 +1,7 @@
 import React from "react";
 import { Metadata } from "next";
 import "@/app/globals.css";
+import { Providers } from "./components/Providers";
 
 export const metadata: Metadata = {
   title: {
@@ -17,14 +18,16 @@ export const metadata: Metadata = {
   },
 };
 
-const App = ({ children }: React.PropsWithChildren) => {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <html lang="en">
-      <body className="flex flex-col min-h-screen">
-        <main>{children}</main>
-      </body>
+      <Providers>
+        <body>{children}</body>
+      </Providers>
     </html>
   );
-};
-
-export default App;
+}

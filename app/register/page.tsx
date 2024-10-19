@@ -1,31 +1,79 @@
+"use client";
+
 import React from "react";
-import dynamic from "next/dynamic";
-const RegisterForm = dynamic(() => import("./components/registerForm"), {
-  ssr: false,
-});
+import { message } from "antd";
+import CryptoJS from "crypto-js";
+import Link from "next/link";
+import RegisterForm from "../components/RegisterForm";
 import Footer from "@/app/components/Footer";
 
-export const metadata = {
-  title: "注册页",
-};
+const RegisterPage: React.FC = () => {
+  const onFinish = async (values: any) => {
+    const encryptedPassword = CryptoJS.AES.encrypt(
+      values.password,
+      "123456"
+    ).toString();
 
-const Register: React.FC = () => {
+    const encryptedPassword1 = CryptoJS.AES.encrypt(
+      values.confirm,
+      "123456"
+    ).toString();
+
+    try {
+      const response = await fetch("/api/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          username: values.username,
+          password: encryptedPassword,
+          password1: encryptedPassword1,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        message.success("注册成功");
+        // 这里可以添加注册成功后的跳转逻辑
+      } else {
+        message.error(data.message || "注册失败，请稍后重试");
+      }
+    } catch (error) {
+      message.error("注册过程中发生错误，请稍后重试");
+    }
+  };
+
   return (
-    <div className="relative flex flex-col justify-center min-h-screen">
-      {/* 背景图片 */}
-      <div className="absolute inset-0 w-full h-full">
-        <img
-          className="w-full h-full object-fill"
-          src="/images/login_bg.webp"
-          alt="background"
-        />
+    <div className="flex flex-col min-h-screen bg-gray-100">
+      <div className="flex-grow flex items-center justify-center">
+        <div className="w-full max-w-md bg-white rounded-lg shadow-xl overflow-hidden">
+          <div className="py-12 px-12">
+            <h2 className="text-3xl font-bold text-center mb-4 text-gray-800">
+              创建账户
+            </h2>
+            <p className="text-center text-gray-600 mb-8">
+              请填写以下信息完成注册
+            </p>
+            <RegisterForm onFinish={onFinish} />
+          </div>
+          <div className="py-5 bg-gray-50">
+            <p className="text-center text-gray-600">
+              已有账号？
+              <Link
+                href="/login"
+                className="text-blue-600 hover:underline ml-1"
+              >
+                立即登录
+              </Link>
+            </p>
+          </div>
+        </div>
       </div>
-
-      {/* 表单内容 */}
-      <RegisterForm></RegisterForm>
-      <Footer className="fixed inset-x-0 bottom-0 w-screen bg-white/80" />
+      <Footer className="bg-white py-4" />
     </div>
   );
 };
 
-export default Register;
+export default RegisterPage;
