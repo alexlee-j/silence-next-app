@@ -1,25 +1,28 @@
 "use client";
 
 import React from "react";
+import { signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import { message } from "antd";
-import CryptoJS from "crypto-js";
 import Link from "next/link";
+import CryptoJS from "crypto-js";
 import RegisterForm from "../components/RegisterForm";
 import Footer from "@/app/components/Footer";
 
 const RegisterPage: React.FC = () => {
+  const router = useRouter();
+
   const onFinish = async (values: any) => {
-    const encryptedPassword = CryptoJS.AES.encrypt(
-      values.password,
-      "123456"
-    ).toString();
-
-    const encryptedPassword1 = CryptoJS.AES.encrypt(
-      values.confirm,
-      "123456"
-    ).toString();
-
     try {
+      const encryptedPassword = CryptoJS.AES.encrypt(
+        values.password,
+        "123456"
+      ).toString();
+      const encryptedPassword1 = CryptoJS.AES.encrypt(
+        values.confirm,
+        "123456"
+      ).toString();
+
       const response = await fetch("/api/register", {
         method: "POST",
         headers: {
@@ -32,15 +35,27 @@ const RegisterPage: React.FC = () => {
         }),
       });
 
-      const data = await response.json();
-
       if (response.ok) {
         message.success("注册成功");
-        // 这里可以添加注册成功后的跳转逻辑
+        // 注册成功后静默登录
+        const result = await signIn("credentials", {
+          username: values.username,
+          password: values.password, // 使用未加密的密码进行登录
+          redirect: false,
+        });
+
+        if (result?.error) {
+          message.error("自动登录失败，请手动登录");
+          router.push("/login");
+        } else {
+          router.push("/dashboard");
+        }
       } else {
+        const data = await response.json();
         message.error(data.message || "注册失败，请稍后重试");
       }
     } catch (error) {
+      console.error("Registration error:", error);
       message.error("注册过程中发生错误，请稍后重试");
     }
   };

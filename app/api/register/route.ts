@@ -35,39 +35,44 @@ export async function POST(req: NextRequest) {
 
     // 这里可以添加更多的密码验证逻辑，比如检查是否为连续密码等
 
-    const result = await prisma.$transaction(async (tx) => {
-      // 检查用户名是否存在
-      const existingUser = await tx.users_info.findUnique({
-        where: { username },
-      });
+    const result = await prisma.$transaction(
+      async (tx) => {
+        // 检查用户名是否存在
+        const existingUser = await tx.users_info.findUnique({
+          where: { username },
+        });
 
-      if (existingUser) {
-        throw new Error("用户已存在");
+        if (existingUser) {
+          throw new Error("用户已存在");
+        }
+
+        // 插入用户信息
+        const newUser = await tx.users_info.create({
+          data: {
+            username,
+            users_pwd: {
+              create: {
+                salt: bcrypt.genSaltSync(10),
+                hash_pwd: bcrypt.hashSync(
+                  decryptedPassword,
+                  bcrypt.genSaltSync(10)
+                ),
+              },
+            },
+            user_role: {
+              create: {
+                role: "user", // 默认角色
+              },
+            },
+          },
+        });
+
+        return newUser;
+      },
+      {
+        timeout: 10000, // 设置为 10 秒，或更长时间
       }
-
-      // 插入用户信息
-      const newUser = await tx.users_info.create({
-        data: {
-          username,
-          users_pwd: {
-            create: {
-              salt: bcrypt.genSaltSync(10),
-              hash_pwd: bcrypt.hashSync(
-                decryptedPassword,
-                bcrypt.genSaltSync(10)
-              ),
-            },
-          },
-          user_role: {
-            create: {
-              role: "user", // 默认角色
-            },
-          },
-        },
-      });
-
-      return newUser;
-    });
+    );
 
     return NextResponse.json({ message: "注册成功" }, { status: 201 });
   } catch (error) {

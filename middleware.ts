@@ -4,10 +4,15 @@ import { getToken } from "next-auth/jwt";
 
 export async function middleware(request: NextRequest) {
   // 从请求中获取 JWT token
-  const token = await getToken({ req: request });
+  const token = await getToken({
+    req: request,
+    secret: process.env.NEXTAUTH_SECRET,
+  });
 
   // 判断用户是否已认证（是否有有效的 token）
   const isAuth = !!token;
+
+  console.log(isAuth, "isAuth", token); // 添加 token 日志
 
   // 检查当前请求的路径是否为登录或注册页面
   const isAuthPage =
@@ -40,14 +45,22 @@ export async function middleware(request: NextRequest) {
   // 角色权限控制
   // 如果用户尝试访问管理员页面但不具有管理员角色，重定向到仪表板
   if (
-    request.nextUrl.pathname.startsWith("/admin") &&
-    token?.role !== "admin"
+    request.nextUrl.pathname.startsWith("/administrator") &&
+    token?.role !== "administrator"
   ) {
     return NextResponse.redirect(new URL("/dashboard", request.url));
   }
+
+  // 如果用户已认证且不是访问认证页面，允许访问
+  return null;
 }
 
 // 配置中间件应用的路由
 export const config = {
-  matcher: ["/dashboard/:path*", "/admin/:path*", "/login", "/register"],
+  matcher: [
+    "/dashboard/:path*",
+    "/administrator/:path*",
+    "/login",
+    "/register",
+  ],
 };
