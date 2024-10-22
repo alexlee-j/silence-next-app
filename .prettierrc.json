@@ -1,0 +1,9 @@
+{
+	"trailingComma": "es5",
+	"tabWidth": 4,
+	"semi": false,
+	"singleQuote": true,
+	"end_of_line": "lf",
+	"insert_final_newline": true,
+	"max_line_length": 80
+}
