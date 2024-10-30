@@ -1,65 +1,77 @@
-import React from "react";
-import { Form, Input, Button, Checkbox } from "antd";
-import { UserOutlined, LockOutlined } from "@ant-design/icons";
-import Link from "next/link";
+'use client'
 
-interface LoginFormProps {
-  onFinish: (values: any) => void;
+import React from 'react'
+import { useForm } from 'react-hook-form'
+import { Input } from '@/components/ui/input'
+import { Button } from '@/components/ui/button'
+import { Checkbox } from '@/components/ui/checkbox'
+import { Label } from '@/components/ui/label'
+
+interface LoginFormValues {
+    username: string
+    password: string
+    remember?: boolean
 }
 
-const LoginForm: React.FC<LoginFormProps> = ({ onFinish }) => {
-  const [form] = Form.useForm();
+interface LoginFormProps {
+    onFinish: (values: LoginFormValues) => void
+    className?: string
+}
 
-  return (
-    <Form
-      form={form}
-      name="login"
-      onFinish={onFinish}
-      layout="vertical"
-      className="space-y-6"
-    >
-      <Form.Item
-        name="username"
-        rules={[{ required: true, message: "请输入用户名" }]}
-      >
-        <Input
-          prefix={<UserOutlined className="text-gray-400" />}
-          placeholder="用户名"
-          className="rounded-md py-2"
-        />
-      </Form.Item>
-      <Form.Item
-        name="password"
-        rules={[{ required: true, message: "请输入密码" }]}
-      >
-        <Input.Password
-          prefix={<LockOutlined className="text-gray-400" />}
-          placeholder="密码"
-          className="rounded-md py-2"
-        />
-      </Form.Item>
-      <div className="flex items-center justify-between">
-        <Form.Item name="remember" valuePropName="checked" noStyle>
-          <Checkbox>记住我</Checkbox>
-        </Form.Item>
-        <Link
-          href="/forgot-password"
-          className="text-sm text-blue-600 hover:underline"
-        >
-          忘记密码？
-        </Link>
-      </div>
-      <Form.Item>
-        <Button
-          type="primary"
-          htmlType="submit"
-          className="w-full bg-blue-600 hover:bg-blue-700 rounded-md py-2 text-white font-semibold transition duration-300 ease-in-out"
-        >
-          登录
-        </Button>
-      </Form.Item>
-    </Form>
-  );
-};
+const LoginForm: React.FC<LoginFormProps> = ({ onFinish, className }) => {
+    const { register, handleSubmit } = useForm<LoginFormValues>()
 
-export default LoginForm;
+    return (
+        <form
+            onSubmit={handleSubmit(onFinish)}
+            className={`space-y-6 ${className}`}
+        >
+            <div className="space-y-2">
+                <Label
+                    htmlFor="username"
+                    className="text-sm font-medium text-gray-700"
+                >
+                    用户名
+                </Label>
+                <Input
+                    id="username"
+                    {...register('username', { required: true })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    placeholder="请输入用户名"
+                />
+            </div>
+            <div className="space-y-2">
+                <Label
+                    htmlFor="password"
+                    className="text-sm font-medium text-gray-700"
+                >
+                    密码
+                </Label>
+                <Input
+                    id="password"
+                    type="password"
+                    {...register('password', { required: true })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    placeholder="请输入密码"
+                />
+            </div>
+            <div className="flex items-center">
+                <Checkbox id="remember" {...register('remember')} />
+                <Label
+                    htmlFor="remember"
+                    className="ml-2 text-sm text-gray-600 cursor-pointer"
+                >
+                    记住我
+                </Label>
+            </div>
+            <Button
+                type="submit"
+                className="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500"
+            >
+                登录
+            </Button>
+        </form>
+    )
+}
+
+export default LoginForm
